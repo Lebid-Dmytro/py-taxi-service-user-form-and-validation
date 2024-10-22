@@ -16,7 +16,9 @@ class CarForm(forms.ModelForm):
 
 class LicenseNumberValidationMixin:
     def clean_license_number(self):
-        license_number = self.cleaned_data["license_number"]
+        license_number = self.cleaned_data.get("license_number")
+        if license_number is None:
+            raise ValidationError("This field cannot be empty.")
         first_part = license_number[:3]
         second_part = license_number[3:]
         if (
@@ -32,7 +34,9 @@ class DriverCreationForm(LicenseNumberValidationMixin, UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = Driver
         fields = UserCreationForm.Meta.fields + (
-            "license_number", "first_name", "last_name"
+            "license_number",
+            "first_name",
+            "last_name"
         )
 
 
